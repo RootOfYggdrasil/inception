@@ -3,11 +3,11 @@ name = inception
 
 all:
 	@printf "Launch configuration ${name}\n"
-	@docker-compose -f ./docker-compose.yml up -d
+	@docker-compose -f srcs/docker-compose.yml up -d
 
 build:
 	@printf "Building configuration ${name}...\n"
-	@docker-compose -f ./docker-compose.yml up -d --build
+	@docker-compose -f srcs/docker-compose.yml up -d --build
 
 # Target to stop the configuration
 down:
