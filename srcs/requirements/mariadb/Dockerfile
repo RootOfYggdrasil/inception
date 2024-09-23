@@ -14,5 +14,9 @@ RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql
 EXPOSE 3306
 
 COPY requirements/mariadb/tools/db_initialize.sh .
+RUN chmod +x ./db_initialize.sh
+RUN chmod 777 ./db_initialize.sh
 RUN sh db_initialize.sh && rm db_initialize.sh
 CMD ["/usr/bin/mysqld", "--skip-log-error"]
+
+VOLUME ["/var/lib/mysql"]

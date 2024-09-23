@@ -11,6 +11,35 @@ if [ ! -d /run/mysqld ]; then
 
 fi
 
+#	First check if mysql exist
+if [ ! -s "/var/run/mysqld/mysqld.sock" ]; then
+		#change owner with flag recursive
+        #chown -R mysql:mysql /var/lib/mysql
+        echo "Initializing Mariadb"
+        # init database
+        mysql_install_db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm
+fi
+
+
+
+echo "CREATE DATABASE IF NOT EXISTS $mariadb_name ;" > InitializeDBUSER.sql
+echo "CREATE USER IF NOT EXISTS '$mariadb_user'@'%' IDENTIFIED BY '$mariadb_password' ;" >> InitializeDBUSER.sql
+echo "GRANT ALL PRIVILEGES ON $mariadb_name.* TO '$mariadb_user'@'%' ;" >> InitializeDBUSER.sql
+echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '12345' ;" >> InitializeDBUSER.sql
+echo "FLUSH PRIVILEGES;" >> InitializeDBUSER.sql
+
+service mysql start
+
+echo "Starting mariadb..... 10 sec required"
+sleep 10
+
+mysql < InitializeDBUSER.sql
+
+sleep 2
+
+kill $(cat /var/run/mysqld/mysqld.pid)
+
+mysqld
 
 # chown -R mysql:mysql /var/log/mysql
 # chown -R mysql:mysql /run/mysqld
@@ -19,19 +48,6 @@ fi
 # chown -R 777 /var/lib/mysql
 
 
-#	First check if mysql exist
-if [ ! -d "/var/lib/mysql" ]; then
-		#change owner with flag recursive
-        #chown -R mysql:mysql /var/lib/mysql
-
-        # init database
-        mysql_install_db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm 
-
-        tfile=`mktemp`
-        if [ ! -f "$tfile" ]; then
-                return 1
-        fi
-fi
 
 
 
