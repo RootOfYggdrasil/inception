@@ -4,7 +4,7 @@ services:
   nginx:
     build: ./requirements/nginx
     container_name: nginx
-    images: nginx:42
+    image: nginx:42
     ports:
       - "443:443"
     depends_on:
@@ -18,20 +18,22 @@ services:
       - inception
 
   mariadb:
+    container_name: mariadb
     build:
-      context: .
-      dockerfile: requirements/mariadb/Dockerfile
+      context: ./requirements/mariadb/
       args:
         DB_NAME: ${DB_NAME}
         DB_USER: ${DB_USER}
         DB_PASS: ${DB_PASS}
         DB_ROOT: ${DB_ROOT}
-    container_name: mariadb
     env_file:
       - .env
+    environment:
+      MARIADB_AUTO_UPGRADE: "1"
+      MARIADB_INITDB_SKIP_TZINFO: "1"
     image: mariadb:42
     ports:
-      - "3306:3306"
+      - "33060:3306"
     volumes:
       - mariadb:/var/lib/mysql/
     restart: always
@@ -48,7 +50,16 @@ services:
     env_file:
       - .env
     volumes:
-      - wordpress:/war/www/html
+      - wordpress:/var/www/html
     networks:
       - inception
     restart: always
+
+volumes:
+  wordpress:
+  mariadb:
+
+networks:
+  inception:
+    name: inception
+    driver: bridge

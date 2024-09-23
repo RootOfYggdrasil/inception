@@ -15,9 +15,6 @@ all:
 
 build:
 	@printf "Building ${name}...\n"
-	if [ ! -d "./srcs/requirements/mariadb/conf/db-volume" ]; then \
-		mkdir ./srcs/requirements/mariadb/conf/db-volume \
-	fi
 	@docker-compose -f $(DC_FILE) up -d --build
 
 # Target to stop the configuration
@@ -38,8 +35,9 @@ dockersp:
 	docker-compose -f $(DC_FILE) $(ARGS)
 # Prune if needed
 prune:
-	docker system prune -f
-
+	@docker-compose -f $(DC_FILE) stop
+	docker system prune -af
+prune-up: prune all
 
 # Declare phony targets to avoid conflicts with file names
 .PHONY	: all build down re stop
