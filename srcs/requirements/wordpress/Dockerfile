@@ -14,5 +14,8 @@ COPY ./tool/script.sh /
 COPY ./conf/wp-config.php /
 RUN chmod +x ./script.sh
 RUN chmod 777 ./script.sh
+RUN echo "listen = 9000" >> /etc/php/7.3/fpm/pool.d/www.conf
+RUN echo "listen.owner = nobody" >> /etc/php/7.3/fpm/pool.d/www.conf
+RUN echo "listen.group = nobody" >> /etc/php/7.3/fpm/pool.d/www.conf
 WORKDIR /var/www/html
 CMD ["sh", "/script.sh" ]

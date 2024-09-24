@@ -35,8 +35,11 @@ dockersp:
 	docker-compose -f $(DC_FILE) $(ARGS)
 # Prune if needed
 prune:
-	@docker-compose -f $(DC_FILE) stop
-	docker system prune -af
+	@docker stop $$(docker ps -qa)
+	@docker system prune --all --force --volumes
+	@docker network prune --force
+	@docker volume prune --force
+
 prune-up: prune all
 
 # Declare phony targets to avoid conflicts with file names
